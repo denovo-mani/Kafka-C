@@ -27,7 +27,7 @@ static void dr_cb (rd_kafka_t *rk,
 }
 
 
-static int run_producer () {
+static int run_producer (char *jsonData) {
         char errstr[512];
         const char *topic;
         rd_kafka_conf_t *conf = rd_kafka_conf_new();
@@ -73,36 +73,34 @@ static int run_producer () {
         }
 
         unsigned char run = 1;
-
+        int i = 1;
         /* Produce messages */
-        for (i = 0 ; run && i < 10 ; i++) {
-                const char *user = "alice";
-                char json[64];
-                rd_kafka_resp_err_t err;
+        const char *user = "alice";
+        
+        rd_kafka_resp_err_t err;
 
-                snprintf(json, sizeof(json), "{ \"count\": %d }", i+1);
+        // snprintf(jsonData, sizeof(jsonData), "{ \"count\": %d }", i+1);
 
-                fprintf(stderr, "Producing message #%d to %s: %s=%s\n", i, topic, user, json);
+        fprintf(stderr, "Producing message #%d to %s: %s=%s\n", i, topic, user, jsonData);
 
-                /* Asynchronous produce */
-                err = rd_kafka_producev(
-                        rk,
-                        RD_KAFKA_V_TOPIC(topic),
-                        RD_KAFKA_V_KEY(user, strlen(user)),
-                        RD_KAFKA_V_VALUE(json, strlen(json)),
-                        /* producev() will make a copy of the message
-                         * value (the key is always copied), so we
-                         * can reuse the same json buffer on the
-                         * next iteration. */
-                        RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-                        RD_KAFKA_V_OPAQUE(&delivery_counter),
-                        RD_KAFKA_V_END);
-                if (err) {
-                        fprintf(stderr, "Produce failed: %s\n", rd_kafka_err2str(err));
-                        break;
-                }
-                rd_kafka_poll(rk, 0);
+        /* Asynchronous produce */
+        err = rd_kafka_producev(
+                rk,
+                RD_KAFKA_V_TOPIC(topic),
+                RD_KAFKA_V_KEY(user, strlen(user)),
+                RD_KAFKA_V_VALUE(jsonData, strlen(jsonData)),
+                /* producev() will make a copy of the message
+                        * value (the key is always copied), so we
+                        * can reuse the same json buffer on the
+                        * next iteration. */
+                RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+                RD_KAFKA_V_OPAQUE(&delivery_counter),
+                RD_KAFKA_V_END);
+        if (err) {
+                fprintf(stderr, "Produce failed: %s\n", rd_kafka_err2str(err));
+                break;
         }
+        rd_kafka_poll(rk, 0);
 
         if (run) {
                 fprintf(stderr, "Waiting for %d more delivery results\n", 10 - delivery_counter);
@@ -118,5 +116,6 @@ static int run_producer () {
 }
 
 void main(){
-       run_producer (); 
+        char *jsonData = "{ \"count\": 45 }";
+        run_producer(jsonData); 
 }
