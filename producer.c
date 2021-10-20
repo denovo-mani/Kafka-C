@@ -55,8 +55,6 @@ static int run_producer () {
         }
 
         topic = "test_c_code";
-
-        rd_kafka_t *rk;
         int i;
         int delivery_counter = 0;
 
