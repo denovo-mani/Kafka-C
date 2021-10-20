@@ -27,7 +27,7 @@ static void dr_cb (rd_kafka_t *rk,
 }
 
 
-static int run_producer (char *jsonData) {
+static int run_producer (char jsonData[]) {
         char errstr[512];
         const char *topic;
         rd_kafka_conf_t *conf = rd_kafka_conf_new();
@@ -97,7 +97,7 @@ static int run_producer (char *jsonData) {
                 RD_KAFKA_V_END);
         if (err) {
                 fprintf(stderr, "Produce failed: %s\n", rd_kafka_err2str(err));
-                break;
+                exit(1);
         }
         rd_kafka_poll(rk, 0);
 
