@@ -102,13 +102,37 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
 
 
 int main (int argc, char **argv) {
+        char hostname[128];
+        char errstr[512];
         const char *topic;
-        rd_kafka_conf_t *conf;
+        rd_kafka_conf_t *conf = rd_kafka_conf_new();
 
         // if (argc != 3) {
         //         fprintf(stderr, "Usage: %s <topic> <config-file>\n", argv[0]);
         //         exit(1);
         // }
+
+        if (rd_kafka_conf_set(conf, "client.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        if (rd_kafka_conf_set(conf, "group.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        if (rd_kafka_conf_set(conf, "bootstrap.servers", "18.232.169.254:9094", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        /* Create Kafka producer handle */
+        rd_kafka_t *rk;
+        if (!(rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr)))) {
+                fprintf(stderr, "%% Failed to create new consumer: %s\n", errstr);
+                exit(1);
+        }
 
         topic = "test_c_code";
         if (run_producer(topic, 10, conf) == -1)
