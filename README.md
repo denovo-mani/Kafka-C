@@ -1,3 +1,3 @@
 # Kafka-C
  
-gcc producer.c -o producer
+gcc producer.c -o producer -lrdkafka -lm
