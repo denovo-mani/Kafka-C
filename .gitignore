@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
-
+producer
+consumer
 # Object files
 *.o
 *.ko
