@@ -26,7 +26,6 @@ static void dr_cb (rd_kafka_t *rk,
         }
 }
 
-
 static int run_producer (char jsonData[]) {
         char errstr[512];
         const char *topic;
