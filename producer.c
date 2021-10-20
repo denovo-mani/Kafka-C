@@ -101,20 +101,14 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
 
 int main (int argc, char **argv) {
         const char *topic;
-        const char *config_file;
         rd_kafka_conf_t *conf;
 
-        if (argc != 3) {
-                fprintf(stderr, "Usage: %s <topic> <config-file>\n", argv[0]);
-                exit(1);
-        }
+        // if (argc != 3) {
+        //         fprintf(stderr, "Usage: %s <topic> <config-file>\n", argv[0]);
+        //         exit(1);
+        // }
 
-        topic = argv[1];
-        config_file = argv[2];
-
-        if (!(conf = read_config(config_file)))
-                return 1;
-
+        topic = "test_c_code";
         if (run_producer(topic, 10, conf) == -1)
                 return 1;
 
