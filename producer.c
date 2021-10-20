@@ -32,12 +32,12 @@ static int run_producer (char jsonData[]) {
         const char *topic;
         rd_kafka_conf_t *conf = rd_kafka_conf_new();
 
-        if (rd_kafka_conf_set(conf, "client.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+        if (rd_kafka_conf_set(conf, "client.id", "switch", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 fprintf(stderr, "%% %s\n", errstr);
                 exit(1);
         }
 
-        if (rd_kafka_conf_set(conf, "group.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+        if (rd_kafka_conf_set(conf, "group.id", "denovo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
                 fprintf(stderr, "%% %s\n", errstr);
                 exit(1);
         }
