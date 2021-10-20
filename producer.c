@@ -27,7 +27,35 @@ static void dr_cb (rd_kafka_t *rk,
 }
 
 
-static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
+static int run_producer () {
+        char errstr[512];
+        const char *topic;
+        rd_kafka_conf_t *conf = rd_kafka_conf_new();
+
+        if (rd_kafka_conf_set(conf, "client.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        if (rd_kafka_conf_set(conf, "group.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        if (rd_kafka_conf_set(conf, "bootstrap.servers", "18.232.169.254:9094", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+                fprintf(stderr, "%% %s\n", errstr);
+                exit(1);
+        }
+
+        /* Create Kafka producer handle */
+        rd_kafka_t *rk;
+        if (!(rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr)))) {
+                fprintf(stderr, "%% Failed to create new consumer: %s\n", errstr);
+                exit(1);
+        }
+
+        topic = "test_c_code";
+
         rd_kafka_t *rk;
         char errstr[512];
         int i;
@@ -38,7 +66,6 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
          * each message produced. */
         rd_kafka_conf_set_dr_msg_cb(conf, dr_cb);
 
-
         /* Create producer.
          * A successful call assumes ownership of \p conf. */
         rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
@@ -48,16 +75,10 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
                 return -1;
         }
 
-        /* Create the topic. */
-        // if (create_topic(rk, topic, 1) == -1) {
-        //         rd_kafka_destroy(rk);
-        //         return -1;
-        // }
-
         unsigned char run = 1;
 
         /* Produce messages */
-        for (i = 0 ; run && i < msgcnt ; i++) {
+        for (i = 0 ; run && i < 10 ; i++) {
                 const char *user = "alice";
                 char json[64];
                 rd_kafka_resp_err_t err;
@@ -87,56 +108,18 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
         }
 
         if (run) {
-                fprintf(stderr, "Waiting for %d more delivery results\n", msgcnt - delivery_counter);
+                fprintf(stderr, "Waiting for %d more delivery results\n", 10 - delivery_counter);
                 rd_kafka_flush(rk, 15*1000);
         }
 
         /* Destroy the producer instance. */
         rd_kafka_destroy(rk);
 
-        fprintf(stderr, "%d/%d messages delivered\n", delivery_counter, msgcnt);
+        fprintf(stderr, "%d/%d messages delivered\n", delivery_counter, 10);
 
         return 0;
 }
 
-
-
-int main (int argc, char **argv) {
-        char hostname[128];
-        char errstr[512];
-        const char *topic;
-        rd_kafka_conf_t *conf = rd_kafka_conf_new();
-
-        // if (argc != 3) {
-        //         fprintf(stderr, "Usage: %s <topic> <config-file>\n", argv[0]);
-        //         exit(1);
-        // }
-
-        if (rd_kafka_conf_set(conf, "client.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-                fprintf(stderr, "%% %s\n", errstr);
-                exit(1);
-        }
-
-        if (rd_kafka_conf_set(conf, "group.id", "foo", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-                fprintf(stderr, "%% %s\n", errstr);
-                exit(1);
-        }
-
-        if (rd_kafka_conf_set(conf, "bootstrap.servers", "18.232.169.254:9094", errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-                fprintf(stderr, "%% %s\n", errstr);
-                exit(1);
-        }
-
-        /* Create Kafka producer handle */
-        rd_kafka_t *rk;
-        if (!(rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr)))) {
-                fprintf(stderr, "%% Failed to create new consumer: %s\n", errstr);
-                exit(1);
-        }
-
-        topic = "test_c_code";
-        if (run_producer(topic, 10, conf) == -1)
-                return 1;
-
-        return 0;
+void main(){
+       run_producer (); 
 }
