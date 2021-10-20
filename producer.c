@@ -76,9 +76,6 @@ static int run_producer (char jsonData[]) {
         rd_kafka_resp_err_t err;
 
         // snprintf(jsonData, sizeof(jsonData), "{ \"count\": %d }", i+1);
-
-        fprintf(stderr, "Producing message #%d to %s: %s=%s\n", i, topic, user, jsonData);
-
         /* Asynchronous produce */
         err = rd_kafka_producev(
                 rk,
