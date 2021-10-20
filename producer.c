@@ -55,7 +55,6 @@ static int run_producer (char *jsonData) {
         }
 
         topic = "test_c_code";
-        int i;
         int delivery_counter = 0;
 
         /* Set up a delivery report callback that will be triggered
