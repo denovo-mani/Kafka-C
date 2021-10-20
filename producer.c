@@ -115,6 +115,5 @@ static int run_producer (char jsonData[]) {
 }
 
 void main(){
-        char jsonData[] = "{ \"count\": 45 }";
-        run_producer(jsonData); 
+        run_producer("{ \"count\": 45 }"); 
 }
