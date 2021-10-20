@@ -48,11 +48,13 @@ static int run_producer (const char *topic, int msgcnt, rd_kafka_conf_t *conf) {
                 return -1;
         }
 
-        // /* Create the topic. */
-        // if (create_topic(rk, topic, 1) == -1) {
-        //         rd_kafka_destroy(rk);
-        //         return -1;
-        // }
+        /* Create the topic. */
+        if (create_topic(rk, topic, 1) == -1) {
+                rd_kafka_destroy(rk);
+                return -1;
+        }
+
+        unsigned char run = 1;
 
         /* Produce messages */
         for (i = 0 ; run && i < msgcnt ; i++) {
